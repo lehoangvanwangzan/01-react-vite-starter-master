@@ -1,8 +1,12 @@
-function Layout() {
+import { Outlet } from "react-router-dom"
+import AppHeader from "./components/layout/app.header"
+
+const Layout = () => {
 
   return (
     <div>
-      hoang van tekshop
+      <AppHeader />
+      <Outlet />
     </div>
   )
 }
