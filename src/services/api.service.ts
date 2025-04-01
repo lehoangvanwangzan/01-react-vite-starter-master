@@ -1,5 +1,5 @@
 // import { FundFilled } from "@ant-design/icons";
-import axios from "services/axios.customize";
+import axios from "@/services/axios.customize";
 // create user
 // const createUserAPI = (fullName: string, email: string, password: string, phone: number) => {
 //     const URL_BACKEND = "/api/v1/user";
@@ -48,25 +48,14 @@ import axios from "services/axios.customize";
 //     return axios.put(URL_BACKEND, data)
 // }
 // register form
-const registerUserAPI = (fullName: string, email: string, password: string, phone: number) => {
+export const registerUserAPI = (fullName: string, email: string, password: string, phone: number) => {
     const URL_BACKEND = "/api/v1/user/register";
-    const data = {
-        fullName: fullName,
-        email: email,
-        password: password,
-        phone: phone
-    }
-    return axios.post(URL_BACKEND, data)
+    return axios.post<IBackendRes<IRegister>>(URL_BACKEND, { fullName, email, password, phone })
 }
-// const loginAPI = (email, password) => {
-//     const URL_BACKEND = "/api/v1/auth/login";
-//     const data = {
-//         username: email,
-//         password: password,
-//         delay: 2000,
-//     }
-//     return axios.post(URL_BACKEND, data)
-// }
+export const loginAPI = (username: string, password: string) => {
+    const URL_BACKEND = "/api/v1/auth/login";
+    return axios.post<IBackendRes<ILogin>>(URL_BACKEND, { username, password })
+}
 // const logoutAPI = () => {
 //     const URL_BACKEND = "/api/v1/auth/logout";
 //     return axios.post(URL_BACKEND);
@@ -127,4 +116,3 @@ const registerUserAPI = (fullName: string, email: string, password: string, phon
 //     deleteBookAPI, UpdateBookAvatarAPI, CreateBookAPI, UpdateBookAPI
 // };
 
-export { registerUserAPI };

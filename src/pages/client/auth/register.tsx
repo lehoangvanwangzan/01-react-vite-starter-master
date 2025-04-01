@@ -1,20 +1,37 @@
-import { Input, Button, Form, Divider } from "antd";
+import { Input, Button, Form, Divider, notification, App } from "antd";
 import type { FormProps } from 'antd';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import './register.scss'
 import { useState } from "react";
+import { loginAPI, registerUserAPI } from "@/services/api.service";
 type FieldType = {
-    fullName?: string,
-    email?: string,
-    password?: string,
-    phone?: string
+    fullName: string,
+    email: string,
+    password: string,
+    phone: number
 }
 
 const RegisterPage = () => {
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+    const { message } = App.useApp();
     const [idSubmit, setIsSubmit] = useState(false);
-    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        console.log('Success:', values);
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        //call API
+        setIsSubmit(true);
+        const { fullName, email, password, phone } = values;
+        const res = await registerUserAPI(fullName, email, password, phone);
+
+        if (res.data) {
+            message.success("Đăng ký mới user thành công");;
+            navigate("/login") //sau khi đăng ký thành công, chuyển qua trang login
+        } else {
+            notification.error({
+                message: "Register User Fail",
+                description: JSON.stringify(res.message),
+            });
+        }
+        setIsSubmit(false);
     }
     const formItemLayout = {
         labelCol: {
@@ -28,6 +45,8 @@ const RegisterPage = () => {
             sm: { span: 8 },
         },
     };
+
+
     return (
         <div className="register-page">
             <main className="main">

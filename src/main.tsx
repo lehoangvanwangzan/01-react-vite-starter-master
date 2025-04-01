@@ -2,13 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import Layout from '@/layout'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import BookPage from 'pages/client/book';
-import AboutPage from 'pages/client/about';
-import ErrorPage from 'pages/error/error.page';
-import LoginPage from 'pages/client/auth/login';
-import RegisterPage from 'pages/client/auth/register';
+import BookPage from '@/pages/client/book';
+import AboutPage from '@/pages/client/about';
+import ErrorPage from '@/pages/error/error.page';
+import LoginPage from '@/pages/client/auth/login';
+import RegisterPage from '@/pages/client/auth/register';
 import 'styles/global.scss'
-import HomePage from 'pages/client/home';
+import HomePage from '@/pages/client/home';
+import { App } from 'antd';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,7 +42,8 @@ const router = createBrowserRouter([
 ]);
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* <Layout /> */}
-    <RouterProvider router={router} />
+    <App>
+      <RouterProvider router={router} />
+    </App>
   </StrictMode>,
 )

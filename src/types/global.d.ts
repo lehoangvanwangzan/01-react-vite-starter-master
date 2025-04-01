@@ -1,5 +1,4 @@
 export { };
-
 declare global {
     interface IBackendRes<T> {
         error?: string | string[];
@@ -17,6 +16,24 @@ declare global {
         },
         results: T[]
     }
+    interface ILogin {
+        access_token: string;
+        user: {
+            _id: string;
+            fullName: string;
+            email: string;
+            phone: number;
+            role: string;
+            avatar: string;
+        }
+    }
+
+    interface IRegister {
+        _id: string;
+        fullName: string;
+        email: string;
+    }
+
 
 }
 
