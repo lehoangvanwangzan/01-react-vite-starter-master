@@ -1,0 +1,35 @@
+.error-container {
+    text-align: center;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: bold;
+    color: #ff6b6b;
+    margin: 0;
+}
+
+.error-message {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.error-description {
+    margin: 20px 0;
+    color: #666;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
