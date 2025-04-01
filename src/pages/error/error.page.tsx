@@ -4,7 +4,7 @@ import './error.page.scss';
 
 const ErrorPage = () => {
     const error: any = useRouteError();
-    // console.error(error);
+    console.error(error);
 
     return (
         <Result

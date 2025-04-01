@@ -9,12 +9,25 @@ type FieldType = {
     password?: string,
     phone?: string
 }
+
 const RegisterPage = () => {
     const [form] = Form.useForm();
     const [idSubmit, setIsSubmit] = useState(false);
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
         console.log('Success:', values);
     }
+    const formItemLayout = {
+        labelCol: {
+            xl: { span: 24 },
+            md: { span: 24 },
+            sm: { span: 8 },
+        },
+        wrapperCol: {
+            xl: { span: 24 },
+            md: { span: 24 },
+            sm: { span: 8 },
+        },
+    };
     return (
         <div className="register-page">
             <main className="main">
@@ -24,6 +37,7 @@ const RegisterPage = () => {
                             <h2 className="text text-large"> Đăng ký tài khoản</h2>
                             <Divider />
                             <Form
+                                {...formItemLayout}
                                 form={form}
                                 layout="vertical"
                                 name="basic"
@@ -31,7 +45,6 @@ const RegisterPage = () => {
                                 autoComplete="off"
                             >
                                 <Form.Item<FieldType>
-                                    labelCol={{ span: 24 }}
                                     label="Họ tên"
                                     name="fullName"
                                     rules={[{
@@ -42,7 +55,6 @@ const RegisterPage = () => {
                                     <Input />
                                 </Form.Item>
                                 <Form.Item<FieldType>
-                                    labelCol={{ span: 24 }}
                                     label="Email"
                                     name="email"
                                     rules={[
@@ -53,7 +65,6 @@ const RegisterPage = () => {
                                     <Input />
                                 </Form.Item>
                                 <Form.Item<FieldType>
-                                    labelCol={{ span: 24 }}
                                     label="Mật khẩu"
                                     name="password"
                                     rules={[{
