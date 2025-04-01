@@ -3,7 +3,7 @@ import type { FormProps } from 'antd';
 import { NavLink, useNavigate } from "react-router-dom";
 import './register.scss'
 import { useState } from "react";
-import { loginAPI, registerUserAPI } from "@/services/api.service";
+import { registerUserAPI } from "@/services/api.service";
 type FieldType = {
     fullName: string,
     email: string,
