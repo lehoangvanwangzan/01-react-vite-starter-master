@@ -54,7 +54,7 @@ export const registerUserAPI = (fullName: string, email: string, password: strin
 }
 export const loginAPI = (username: string, password: string) => {
     const URL_BACKEND = "/api/v1/auth/login";
-    return axios.post<IBackendRes<ILogin>>(URL_BACKEND, { username, password })
+    return axios.post<IBackendRes<ILogin>>(URL_BACKEND, { username, password, delay: 2000 })
 }
 // const logoutAPI = () => {
 //     const URL_BACKEND = "/api/v1/auth/logout";
@@ -64,6 +64,10 @@ export const loginAPI = (username: string, password: string) => {
 //     const URL_BACKEND = "/api/v1/auth/account";
 //     return axios.get(URL_BACKEND);
 // }
+export const fetchAccountAPI = () => {
+    const URL_BACKEND = "/api/v1/auth/account";
+    return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND)
+}
 // const fetchAllUserAPI = (current, pageSize) => {
 //     const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
 //     return axios.get(URL_BACKEND);

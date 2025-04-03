@@ -1,4 +1,4 @@
-import { Input, Button, Form, Divider, notification, App } from "antd";
+import { Input, Button, Form, Divider, App } from "antd";
 import type { FormProps } from 'antd';
 import { NavLink, useNavigate } from "react-router-dom";
 import './register.scss'
@@ -14,7 +14,7 @@ type FieldType = {
 const RegisterPage = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    const { message } = App.useApp();
+    const { message, notification } = App.useApp();
     const [idSubmit, setIsSubmit] = useState(false);
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         //call API

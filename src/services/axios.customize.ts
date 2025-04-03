@@ -11,9 +11,12 @@ NProgress.configure({
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     NProgress.start();
-    if (typeof window !== "undefined" && window && window.localStorage && window.localStorage.getItem('access_token')) {
-        config.headers.Authorization = 'Bearer ' + window.localStorage.getItem('access_token');
-    }
+    // if (typeof window !== "undefined" && window && window.localStorage && window.localStorage.getItem('access_token')) {
+    //     config.headers.Authorization = 'Bearer ' + window.localStorage.getItem('access_token');
+    // }
+    const token = localStorage.getItem("access_token");
+    const auth = token ? `Bearer ${token}` : '';
+    config.headers['Authorization'] = auth;
     // Do something before request is sent
     return config;
 }, function (error) {
