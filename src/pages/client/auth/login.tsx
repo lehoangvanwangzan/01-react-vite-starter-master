@@ -22,7 +22,7 @@ const LoginPage = () => {
         const { username, password } = values;
         const res = await loginAPI(username, password);
 
-        if (res?.data) {
+        if (res?.data) { //nếu có dữ liệu trả về
             setIsAuthenticated(true); //set authenticated = true
             setUser(res.data.user); //set user = user từ response
             localStorage.setItem("access_token", res.data.access_token); //lưu token vào localStorage

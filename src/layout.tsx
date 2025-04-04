@@ -6,12 +6,13 @@ import { useCurrentApp } from "components/context/app.context"
 import PropagateLoader from "react-spinners/PropagateLoader"
 
 const Layout = () => {
-  const { setUser, isAppLoading, setIsAppLoading } = useCurrentApp();
+  const { setUser, isAppLoading, setIsAppLoading, setIsAuthenticated } = useCurrentApp();
   useEffect(() => {
     const fetchAccount = async () => {
       const res = await fetchAccountAPI();
       if (res.data) {
         setUser(res.data.user);
+        setIsAuthenticated(true);
         setIsAppLoading(false);
       } else setIsAppLoading(false);
     }
@@ -25,7 +26,7 @@ const Layout = () => {
         left: "50%",
         transform: "translate(-50%,-50%)",
       }}>
-        <PropagateLoader size={40} color="#35d1b2" />
+        <PropagateLoader size={20} color="#35d1b2" />
       </div>
       :
       <>

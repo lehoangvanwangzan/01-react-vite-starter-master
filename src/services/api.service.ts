@@ -66,7 +66,7 @@ export const loginAPI = (username: string, password: string) => {
 // }
 export const fetchAccountAPI = () => {
     const URL_BACKEND = "/api/v1/auth/account";
-    return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND)
+    return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND, { headers: { delay: 2000 } });
 }
 // const fetchAllUserAPI = (current, pageSize) => {
 //     const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
