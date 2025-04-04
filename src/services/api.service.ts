@@ -60,10 +60,15 @@ export const loginAPI = (username: string, password: string) => {
 //     const URL_BACKEND = "/api/v1/auth/logout";
 //     return axios.post(URL_BACKEND);
 // }
+export const logoutAPI = () => {
+    const URL_BACKEND = "/api/v1/auth/logout";
+    return axios.post<IBackendRes<ILogout>>(URL_BACKEND)
+}
 // const getAccountAPI = () => {
 //     const URL_BACKEND = "/api/v1/auth/account";
 //     return axios.get(URL_BACKEND);
 // }
+
 export const fetchAccountAPI = () => {
     const URL_BACKEND = "/api/v1/auth/account";
     return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND, { headers: { delay: 2000 } });
@@ -72,6 +77,10 @@ export const fetchAccountAPI = () => {
 //     const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
 //     return axios.get(URL_BACKEND);
 // }
+export const getUsersAPI = () => {
+    const URL_BACKEND = "/api/v1/user?current=1&pageSize=57";
+    return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
+}
 // const fetchALLBookAPI = (current, pageSize) => {
 //     const URL_BACKEND = `/api/v1/book?current=${current}&pageSize=${pageSize}`;
 //     return axios.get(URL_BACKEND);
