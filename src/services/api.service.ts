@@ -77,8 +77,12 @@ export const fetchAccountAPI = () => {
 //     const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
 //     return axios.get(URL_BACKEND);
 // }
-export const getUsersAPI = () => {
-    const URL_BACKEND = "/api/v1/user?current=1&pageSize=57";
+// export const getUsersAPI = (current: number, pageSize: number) => {
+//     const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
+//     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
+// }
+export const getUsersAPI = (query: string) => {
+    const URL_BACKEND = `/api/v1/user?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
 }
 // const fetchALLBookAPI = (current, pageSize) => {
