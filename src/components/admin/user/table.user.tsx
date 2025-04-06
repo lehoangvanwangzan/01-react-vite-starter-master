@@ -1,98 +1,32 @@
-import { getUsersAPI } from '@/services/api.service';
+import { deleteUserAPI, getUsersAPI } from '@/services/api.service';
 import { dateRangeValidate } from '@/services/helper';
 import { DeleteTwoTone, EditTwoTone, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { App, Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
+import { DetailUser } from 'components/admin/user/detail.user';
 
-const waitTimePromise = async (time: number = 100) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(true);
-        }, time);
-    });
-};
+// const HandleDeleteUser = async (id: string) => {
+//     
+//     const res = await deleteUserAPI(id);
+//     if (res.data) {
+//         notification.success({
+//             message: "Delete User Success",
+//             description: "Xóa user thành công",
+//         }
 
-const waitTime = async (time: number = 100) => {
-    await waitTimePromise(time);
-};
+//         );
+//     } else {
+//         notification.error({
+//             message: "Delete User Fail",
+//             description: JSON.stringify(res.message),
+//         });
+//     }
+
+// }
 
 
-const columns: ProColumns<IUserTable>[] = [
-    {
-        dataIndex: 'index',
-        valueType: 'indexBorder',
-        width: 48,
-    },
-    {
-        title: '_id',
-        dataIndex: '_id',
-        copyable: true,
-        ellipsis: true,
-        tooltip: 'id là bắt buộc',
-        hideInSearch: true,
-        render: (dom, entity, index, action, schema) => {
-            return (
-                <a href='#'>{entity._id}</a>
-            )
-        },
-
-    },
-    {
-        title: 'Email ',
-        dataIndex: 'email',
-        copyable: true,
-        ellipsis: true,
-        tooltip: 'Email người dùng',
-    },
-    {
-        title: 'Họ và tên ',
-        dataIndex: 'fullName',
-        copyable: true,
-        ellipsis: true,
-        tooltip: 'Email người dùng',
-    },
-    {
-        title: 'Phone',
-        dataIndex: 'phone',
-        copyable: true,
-        ellipsis: true,
-        tooltip: 'số điện thoại người dùng',
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAt',
-        tooltip: 'ngày tạo user',
-        valueType: 'date',
-        hideInSearch: true,
-        sorter: true,
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAtRange',
-        valueType: 'dateRange',
-        hideInTable: true,
-    },
-    {
-        title: 'Action',
-        tooltip: 'Edit, Delete',
-        hideInSearch: true,
-        render(dom, entity, index, action, schema) {
-            return (<>
-                <EditTwoTone
-                    twoToneColor='#f57800'
-                    style={{ cursor: 'pointer', marginRight: '10px' }}
-                />
-                <DeleteTwoTone
-                    twoToneColor='#ff4d4f'
-                    style={{ cursor: 'pointer', marginLeft: '10px' }}
-                />
-            </>
-            )
-        },
-    },
-];
 type TSearch = {
     fullName?: string;
     email?: string;
@@ -108,6 +42,100 @@ const TableUser = () => {
         pages: 0,
         total: 0,
     });
+    const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
+    const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
+
+    const columns: ProColumns<IUserTable>[] = [
+        {
+            dataIndex: 'index',
+            valueType: 'indexBorder',
+            width: 48,
+        },
+        {
+            title: '_id',
+            dataIndex: '_id',
+            copyable: true,
+            ellipsis: true,
+            tooltip: 'id là bắt buộc',
+            hideInSearch: true,
+            render: (dom, entity, index, action, schema) => {
+                return (
+                    <a
+                        onClick={() => {
+                            setOpenViewDetail(true);
+                            setDataViewDetail(entity);
+                        }}
+                        href='#'>{entity._id}</a>
+                )
+            },
+
+        },
+        {
+            title: 'Email ',
+            dataIndex: 'email',
+            copyable: true,
+            ellipsis: true,
+            tooltip: 'Email người dùng',
+        },
+        {
+            title: 'Họ và tên ',
+            dataIndex: 'fullName',
+            copyable: true,
+            ellipsis: true,
+            tooltip: 'Email người dùng',
+        },
+        {
+            title: 'Phone',
+            dataIndex: 'phone',
+            copyable: true,
+            ellipsis: true,
+            tooltip: 'số điện thoại người dùng',
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            tooltip: 'ngày tạo user',
+            valueType: 'date',
+            hideInSearch: true,
+            sorter: true,
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAtRange',
+            valueType: 'dateRange',
+            hideInTable: true,
+        },
+        {
+            title: 'Action',
+            tooltip: 'Edit, Delete',
+            hideInSearch: true,
+            render(dom, entity, index, action, schema) {
+                return (<>
+                    <EditTwoTone
+                        twoToneColor='#f57800'
+                        style={{ cursor: 'pointer', marginRight: '10px' }}
+                    />
+                    <Popconfirm
+                        title="Xóa người dùng"
+                        description="Bạn chắc chắn xóa user này?"
+                        onConfirm={() => {
+                            console.log("check delete user", entity._id);
+                            // HandleDeleteUser(entity._id)
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                        placement="left"
+                    >
+                        <DeleteTwoTone
+                            twoToneColor='#ff4d4f'
+                            style={{ cursor: 'pointer', marginLeft: '10px' }}
+                        />
+                    </Popconfirm >
+                </>
+                )
+            },
+        },
+    ];
     return (
         <>
             <ProTable<IUserTable, TSearch>
@@ -187,6 +215,12 @@ const TableUser = () => {
                     </Button>
 
                 ]}
+            />
+            <DetailUser
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
             />
         </>
     );

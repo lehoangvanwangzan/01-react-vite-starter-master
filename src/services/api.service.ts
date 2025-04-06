@@ -25,6 +25,10 @@ import axios from "@/services/axios.customize";
 //     const URL_BACKEND = `/api/v1/user/${id}`; //backtick
 //     return axios.delete(URL_BACKEND)
 // }
+export const deleteUserAPI = (id: string) => {
+    const URL_BACKEND = `/api/v1/user/${id}`;
+    return axios.delete<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
+}
 // const handleUploadFile = (file, folder) => {
 //     const URL_BACKEND = "/api/v1/file/upload"; //backtick
 //     let config = {
