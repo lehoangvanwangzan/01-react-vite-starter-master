@@ -11,6 +11,10 @@ import axios from "@/services/axios.customize";
 //     }
 //     return axios.post(URL_BACKEND, data)
 // }
+export const createUserAPI = (fullName: string, email: string, password: string, phone: number) => {
+    const URL_BACKEND = "/api/v1/user";
+    return axios.post<IBackendRes<ICreateUser>>(URL_BACKEND, { fullName, email, password, phone })
+}
 // //update user
 // const updateUserAPI = (_id, fullName, phone) => {
 //     const URL_BACKEND = "/api/v1/user";
@@ -25,6 +29,10 @@ import axios from "@/services/axios.customize";
 //     const URL_BACKEND = `/api/v1/user/${id}`; //backtick
 //     return axios.delete(URL_BACKEND)
 // }
+export const deleteUserAPI = (id: string) => {
+    const URL_BACKEND = `/api/v1/user/${id}`;
+    return axios.delete<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
+}
 // const handleUploadFile = (file, folder) => {
 //     const URL_BACKEND = "/api/v1/file/upload"; //backtick
 //     let config = {

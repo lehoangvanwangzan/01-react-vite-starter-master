@@ -41,6 +41,9 @@ declare global {
         role: string;
         avatar: string;
     }
+    interface ICreateUser {
+        user: IUser
+    }
     interface IFetchAccount {
         user: IUser
     }

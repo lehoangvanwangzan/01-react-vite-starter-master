@@ -15,7 +15,7 @@ const RegisterPage = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const { message, notification } = App.useApp();
-    const [idSubmit, setIsSubmit] = useState(false);
+    const [idSubmit, setIsSubmit] = useState<boolean>(false);
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         //call API
         setIsSubmit(true);
