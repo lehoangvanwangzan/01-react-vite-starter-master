@@ -25,13 +25,23 @@ export const createUserAPI = (fullName: string, email: string, password: string,
 //     }
 //     return axios.put(URL_BACKEND, data)
 // }
+export const UpdateUserAPI = (_id: string, fullName: string, phone: string) => {
+    const URL_BACKEND = "/api/v1/user";
+    const data = {
+        _id: _id,
+        fullName: fullName,
+        phone: phone
+    }
+    return axios.put<IBackendRes<IRegister>>(URL_BACKEND, data)
+}
+
 // const deleteUserAPI = (id) => {
 //     const URL_BACKEND = `/api/v1/user/${id}`; //backtick
 //     return axios.delete(URL_BACKEND)
 // }
-export const deleteUserAPI = (id: string) => {
-    const URL_BACKEND = `/api/v1/user/${id}`;
-    return axios.delete<IBackendRes<IModelPaginate<IUserTable>>>(URL_BACKEND);
+export const deleteUserAPI = (_id: string) => {
+    const URL_BACKEND = `/api/v1/user/${_id}`;
+    return axios.delete<IBackendRes<IModelPaginate<IDeleterUser>>>(URL_BACKEND);
 }
 // const handleUploadFile = (file, folder) => {
 //     const URL_BACKEND = "/api/v1/file/upload"; //backtick
@@ -144,9 +154,4 @@ export const bulkCreateUserAPI = (data: {
     return axios.post<IBackendRes<IResponseImport>>(URL_BACKEND, data)
 }
 
-// export {
-//     createUserAPI, updateUserAPI, fetchAllUserAPI, deleteUserAPI, handleUploadFile,
-//     UpdateUserAvatarAPI, registerUserAPI, loginAPI, getAccountAPI, logoutAPI, fetchALLBookAPI,
-//     deleteBookAPI, UpdateBookAvatarAPI, CreateBookAPI, UpdateBookAPI
-// };
 

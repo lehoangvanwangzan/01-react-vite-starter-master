@@ -1,36 +1,16 @@
 import { dateRangeValidate } from '@/services/helper';
-import { getUsersAPI } from '@/services/api.service';
+import { deleteUserAPI, getUsersAPI } from '@/services/api.service';
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Popconfirm } from 'antd';
+import { App, Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import { DetailUser, } from 'components/admin/user/detail.user';
 import { CreateUser } from 'components/admin/user/create.user';
 import { ImportUser } from 'components/admin/user/import.user';
-import { ExportUser } from 'components/admin/user/export.user';
-
-
-// const HandleDeleteUser = async (id: string) => {
-//     
-//     const res = await deleteUserAPI(id);
-//     if (res.data) {
-//         notification.success({
-//             message: "Delete User Success",
-//             description: "Xóa user thành công",
-//         }
-
-//         );
-//     } else {
-//         notification.error({
-//             message: "Delete User Fail",
-//             description: JSON.stringify(res.message),
-//         });
-//     }
-
-// }
-
-
+import { CSVLink } from "react-csv";
+import { UpdateUser } from './update.user';
+import dayjs from 'dayjs';
 type TSearch = {
     fullName?: string;
     email?: string;
@@ -39,6 +19,7 @@ type TSearch = {
     createdAtRange?: string;
 }
 const TableUser = () => {
+    const { message, notification } = App.useApp();
     const actionRef = useRef<ActionType>();
     const [meta, setMeta] = useState({
         current: 1,
@@ -49,8 +30,13 @@ const TableUser = () => {
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
     const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
     const [openCreateUser, setOpenCreateUser] = useState<boolean>(false);
+
+    const [openUpdateUser, setOpenUpdateUser] = useState<boolean>(false);
+    const [dataUpdateUser, setDataUpdateUser] = useState<IUserTable | null>(null);
+
     const [openImportUser, setOpenImportUser] = useState<boolean>(false);
-    const [openExportUser, setOpenExportUser] = useState<boolean>(false);
+    const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
+    const [isDeleteUser, setIsDeleteUser] = useState<boolean>(false);
     const columns: ProColumns<IUserTable>[] = [
         {
             title: 'STT',
@@ -105,6 +91,13 @@ const TableUser = () => {
             valueType: 'date',
             hideInSearch: true,
             sorter: true,
+            render: (dom, entity) => {
+                return (
+                    <>
+                        {dayjs(entity.createdAt).format("DD-MM-YYYY")}
+                    </>
+                )
+            },
         },
         {
             title: 'Created At',
@@ -121,21 +114,27 @@ const TableUser = () => {
                     <EditTwoTone
                         twoToneColor='#f57800'
                         style={{ cursor: 'pointer', marginRight: '10px' }}
+                        onClick={() => {
+                            setOpenUpdateUser(true);
+                            setDataUpdateUser(entity);
+                            (entity);
+                        }}
                     />
                     <Popconfirm
                         title="Xóa người dùng"
                         description="Bạn chắc chắn xóa user này?"
                         onConfirm={() => {
                             console.log("check delete user", entity._id);
-                            // HandleDeleteUser(entity._id)
+                            HandleDeleteUser(entity._id)
                         }}
-                        okText="Yes"
-                        cancelText="No"
+                        okText="Xác nhận"
+                        cancelText="Hủy"
                         placement="left"
+                        okButtonProps={{ loading: isDeleteUser }}
                     >
                         <DeleteTwoTone
                             twoToneColor='#ff4d4f'
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
+                            style={{ cursor: 'pointer', marginLeft: '20px' }}
                         />
                     </Popconfirm >
                 </>
@@ -143,8 +142,24 @@ const TableUser = () => {
             },
         },
     ];
+
     const refreshTable = () => {
         actionRef.current?.reload();
+    }
+    //delete user
+    const HandleDeleteUser = async (_id: string) => {
+        setIsDeleteUser(true);
+        const res = await deleteUserAPI(_id);
+        if (res.data) {
+            message.success('Xóa user thành công');
+            refreshTable();
+        } else {
+            notification.error({
+                message: "Xóa user thất bại",
+                description: res.message,
+            });
+        }
+        setIsDeleteUser(false);
     }
     return (
         <>
@@ -179,7 +194,9 @@ const TableUser = () => {
 
                     const res = await getUsersAPI(query);
                     if (res.data) {
+                        console.log("check res data", res.data?.result ?? []);
                         setMeta(res.data?.meta);
+                        setCurrentDataTable(res.data?.result ?? []);
                     }
                     return {
                         // data: data.data,
@@ -192,16 +209,6 @@ const TableUser = () => {
                 editable={{
                     type: 'multiple',
                 }}
-                // columnsState={{
-                //     persistenceKey: 'pro-table-singe-demos',
-                //     persistenceType: 'localStorage',
-                //     defaultValue: {
-                //         option: { fixed: 'right', disable: true },
-                //     },
-                //     onChange(value) {
-                //         console.log('value: ', value);
-                //     },
-                // }}
                 rowKey="_id"
                 pagination={{
                     current: meta.current,
@@ -218,12 +225,14 @@ const TableUser = () => {
                     <Button
                         key="button"
                         icon={<ExportOutlined />}
-                        onClick={() => {
-                            setOpenExportUser(true);
-                        }}
-                        type="primary"
+                        type='primary'
                     >
-                        Export
+                        <CSVLink
+                            data={currentDataTable}
+                            filename='export-user.csv'
+                        >
+                            Export
+                        </CSVLink>
                     </Button>
                     ,
                     <Button
@@ -267,11 +276,14 @@ const TableUser = () => {
                 setOpenImportUser={setOpenImportUser}
                 refreshTable={refreshTable}
             />
-            <ExportUser
-                openExportUser={openExportUser}
-                setOpenExportUser={setOpenExportUser}
-
+            <UpdateUser
+                openUpdateUser={openUpdateUser}
+                setOpenUpdateUser={setOpenUpdateUser}
+                setDataUpdateUser={setDataUpdateUser}
+                dataUpdateUser={dataUpdateUser}
+                refreshTable={refreshTable}
             />
+
         </>
     );
 };

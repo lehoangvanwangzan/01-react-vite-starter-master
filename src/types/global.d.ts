@@ -32,6 +32,7 @@ declare global {
         _id: string;
         fullName: string;
         email: string;
+        phone: string;
     }
     interface IUser {
         _id: string;
@@ -66,5 +67,9 @@ declare global {
         countError: number;
         data: any;
     }
+    interface IDeleterUser {
+        _id: string;
+    }
+
 }
 
