@@ -134,6 +134,15 @@ export const getUsersAPI = (query: string) => {
 //     }
 //     return axios.put(URL_BACKEND, data)
 // }
+export const bulkCreateUserAPI = (data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+}[]) => {
+    const URL_BACKEND = "/api/v1/user/bulk-create";
+    return axios.post<IBackendRes<IResponseImport>>(URL_BACKEND, data)
+}
 
 // export {
 //     createUserAPI, updateUserAPI, fetchAllUserAPI, deleteUserAPI, handleUploadFile,

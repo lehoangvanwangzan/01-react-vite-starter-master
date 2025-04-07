@@ -1,5 +1,5 @@
-import { getUsersAPI } from '@/services/api.service';
 import { dateRangeValidate } from '@/services/helper';
+import { getUsersAPI } from '@/services/api.service';
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
@@ -173,11 +173,9 @@ const TableUser = () => {
                         }
                     }
                     //default sort
-                    query += `&sort=-createdAt`;
-
                     if (sort && sort.createdAt) {
                         query += `&sort=${sort.createdAt === 'ascend' ? 'createdAt' : '-createdAt'}`; // sort tăng dần hoặc giảm dần
-                    }
+                    } else query += `&sort=-createdAt`;
 
                     const res = await getUsersAPI(query);
                     if (res.data) {
@@ -267,10 +265,12 @@ const TableUser = () => {
             <ImportUser
                 openImportUser={openImportUser}
                 setOpenImportUser={setOpenImportUser}
+                refreshTable={refreshTable}
             />
             <ExportUser
                 openExportUser={openExportUser}
                 setOpenExportUser={setOpenExportUser}
+
             />
         </>
     );
