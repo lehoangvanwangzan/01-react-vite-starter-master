@@ -41,7 +41,7 @@ export const UpdateUserAPI = (_id: string, fullName: string, phone: string) => {
 // }
 export const deleteUserAPI = (_id: string) => {
     const URL_BACKEND = `/api/v1/user/${_id}`;
-    return axios.delete<IBackendRes<IModelPaginate<IDeleterUser>>>(URL_BACKEND);
+    return axios.delete<IBackendRes<IModelPaginate<IDeleteUser>>>(URL_BACKEND);
 }
 // const handleUploadFile = (file, folder) => {
 //     const URL_BACKEND = "/api/v1/file/upload"; //backtick
@@ -107,6 +107,14 @@ export const getUsersAPI = (query: string) => {
 //     const URL_BACKEND = `/api/v1/book?current=${current}&pageSize=${pageSize}`;
 //     return axios.get(URL_BACKEND);
 // }
+export const getBooksAPI = (query: string) => {
+    const URL_BACKEND = `/api/v1/book?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(URL_BACKEND);
+}
+export const deleteBookAPI = (_id: string) => {
+    const URL_BACKEND = `/api/v1/book/${_id}`;
+    return axios.delete<IBackendRes<IModelPaginate<IDeleteBook>>>(URL_BACKEND);
+}
 // const deleteBookAPI = (id) => {
 //     const URL_BACKEND = `/api/v1/book/${id}`; //backtick
 //     return axios.delete(URL_BACKEND)

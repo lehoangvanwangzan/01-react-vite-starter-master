@@ -67,7 +67,25 @@ declare global {
         countError: number;
         data: any;
     }
-    interface IDeleterUser {
+    interface IDeleteUser {
+        _id: string;
+    }
+    //interface book
+    interface IBookTable {
+        _id: string;
+        mainText: string;
+        thumbnail: string;
+        category: string;
+        author: string;
+        price: number;
+        quantity: number;
+        createdAt: Date;
+        updatedAt: Date;
+        slider: string[];
+        sold: number;
+
+    }
+    interface IDeleteBook {
         _id: string;
     }
 

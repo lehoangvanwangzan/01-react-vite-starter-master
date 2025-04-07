@@ -8,8 +8,8 @@ import { bulkCreateUserAPI } from "@/services/api.service";
 import templateFile from "assets/template/template_import.xlsx?url";
 const { Dragger } = Upload;
 interface IProps {
-    openImportUser: boolean;
-    setOpenImportUser: (v: boolean) => void;
+    openImportBook: boolean;
+    setOpenImportBook: (v: boolean) => void;
     refreshTable: () => void;
 }
 interface IDataImport {
@@ -17,8 +17,8 @@ interface IDataImport {
     email: string;
     phone: string;
 }
-export const ImportUser = (props: IProps) => {
-    const { openImportUser, setOpenImportUser, refreshTable } = props;
+export const ImportBook = (props: IProps) => {
+    const { openImportBook, setOpenImportBook, refreshTable } = props;
     const { message } = App.useApp();
     const [dataImport, setDataImport] = useState<IDataImport[]>([]);
     const [idSubmit, setIsSubmit] = useState<boolean>(false);
@@ -101,7 +101,7 @@ export const ImportUser = (props: IProps) => {
             });
         }
         setIsSubmit(false);
-        setOpenImportUser(false);
+        setOpenImportBook(false);
         setDataImport([]);
         refreshTable();
     }
@@ -110,10 +110,10 @@ export const ImportUser = (props: IProps) => {
             <Modal
                 title="Import data User"
                 width={"50vw"}
-                open={openImportUser}
+                open={openImportBook}
                 onOk={() => handleImport()}
                 onCancel={() => {
-                    setOpenImportUser(false)
+                    setOpenImportBook(false)
                     setDataImport([]);
                 }}
                 okText="Import data"
@@ -136,7 +136,7 @@ export const ImportUser = (props: IProps) => {
                         <a
                             onClick={e => e.stopPropagation()}
                             href={templateFile}
-                            download="template_import_user.xlsx"
+                            download="template_import.xlsx"
                         >
                             Download sample file
                         </a>
