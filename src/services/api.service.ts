@@ -139,6 +139,29 @@ export const deleteBookAPI = (_id: string) => {
 //     }
 //     return axios.post(URL_BACKEND, data)
 // }
+export const CreateBookAPI = (
+    _id: string,
+    mainText: string,
+    author: string,
+    price: number,
+    quantity: number,
+    category: string,
+    thumbnail: string,
+    slider: string[],
+    description: string) => {
+    const URL_BACKEND = `/api/v1/book/${_id}`;
+    const data = {
+        mainText: mainText,
+        author: author,
+        price: price,
+        quantity: quantity,
+        category: category,
+        thumbnail: thumbnail,
+        slider: slider,
+        description: description,
+    }
+    return axios.post<IBackendRes<IBookTable>>(URL_BACKEND, data)
+}
 // const UpdateBookAPI = (_id, thumbnail, mainText, author, price, quantity, category) => {
 //     const URL_BACKEND = "/api/v1/book";
 //     const data = {
@@ -183,6 +206,10 @@ export const bulkCreateUserAPI = (data: {
 }[]) => {
     const URL_BACKEND = "/api/v1/user/bulk-create";
     return axios.post<IBackendRes<IResponseImport>>(URL_BACKEND, data)
+}
+export const GetCategoryAPI = () => {
+    const URL_BACKEND = `/api/v1/database/category`;
+    return axios.get<IBackendRes<string>>(URL_BACKEND)
 }
 
 

@@ -8,8 +8,8 @@ import { CreateBook } from 'components/admin/book/create.book';
 import { ImportBook } from 'components/admin/book/import.book';
 import { CSVLink } from "react-csv";
 import dayjs from 'dayjs';
-import { DetailBook } from './detail.book';
-import { UpdateBook } from './update.book';
+import { DetailBook } from 'components/admin/book/detail.book';
+import { UpdateBook } from 'components/admin/book/update.book';
 import { deleteBookAPI, getBooksAPI } from '@/services/api.service';
 type TSearch = {
     thumbnail: string;
@@ -31,13 +31,15 @@ const TableBook = () => {
     });
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
     const [dataViewDetail, setDataViewDetail] = useState<IBookTable | null>(null);
+
     const [openCreateBook, setOpenCreateBook] = useState<boolean>(false);
+    const [dataCreateBook, setDataCreateBook] = useState<IBookTable | null>(null);
 
     const [openUpdateBook, setOpenUpdateBook] = useState<boolean>(false);
     const [dataUpdateBook, setDataUpdateBook] = useState<IBookTable | null>(null);
 
     const [openImportBook, setOpenImportBook] = useState<boolean>(false);
-    const [currentDataTable, setCurrentDataTable] = useState<IBookTable[]>([]);
+    const [currentDataTable] = useState<IBookTable[]>([]);
     const [isDeleteBook, setIsDeleteBook] = useState<boolean>(false);
     const columns: ProColumns<IBookTable>[] = [
         {
@@ -299,6 +301,8 @@ const TableBook = () => {
             <CreateBook
                 openCreateBook={openCreateBook}
                 setOpenCreateBook={setOpenCreateBook}
+                dataCreateBook={dataCreateBook}
+                setDataCreateBook={setDataCreateBook}
                 refreshTable={refreshTable}
             />
             <ImportBook
