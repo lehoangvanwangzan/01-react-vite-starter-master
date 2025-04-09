@@ -5,7 +5,7 @@ import type { UploadProps } from "antd";
 import Exceljs from "exceljs";
 import { Buffer } from "buffer";
 import { bulkCreateUserAPI } from "@/services/api.service";
-import templateFile from "assets/template/template_import.xlsx?url";
+import templateFile from "assets/template/template_import_book.xlsx?url";
 const { Dragger } = Upload;
 interface IProps {
     openImportBook: boolean;

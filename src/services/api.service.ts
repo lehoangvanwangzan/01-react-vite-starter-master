@@ -152,6 +152,29 @@ export const deleteBookAPI = (_id: string) => {
 //     }
 //     return axios.put(URL_BACKEND, data)
 // }
+export const UpdateBookAPI = (
+    _id: string,
+    mainText: string,
+    author: string,
+    price: number,
+    quantity: number,
+    category: string,
+    thumbnail: string,
+    slider: string[],
+    description: string) => {
+    const URL_BACKEND = `/api/v1/book/${_id}`;
+    const data = {
+        mainText: mainText,
+        author: author,
+        price: price,
+        quantity: quantity,
+        category: category,
+        thumbnail: thumbnail,
+        slider: slider,
+        description: description,
+    }
+    return axios.put<IBackendRes<IBookTable>>(URL_BACKEND, data)
+}
 export const bulkCreateUserAPI = (data: {
     fullName: string;
     email: string;

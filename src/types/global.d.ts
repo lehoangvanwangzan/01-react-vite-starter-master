@@ -83,6 +83,8 @@ declare global {
         updatedAt: Date;
         slider: string[];
         sold: number;
+        description: string;
+        publisher: string;
 
     }
     interface IDeleteBook {
