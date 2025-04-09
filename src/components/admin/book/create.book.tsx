@@ -44,19 +44,19 @@ export const CreateBook = (Props: IProps) => {
     const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
     const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
 
-    const [previewOpent, setPreviewOpent] = useState<boolean>(false);
+    const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
 
     useEffect(() => {
         const fetchCategory = async () => {
             const res = await GetCategoryAPI();
             if (res && res.data) {
-                const data = res.data.map((item) => {
+                const data = Array.isArray(res.data) ? res.data.map((item) => {
                     return {
                         label: item,
                         value: item,
                     }
-                })
+                }) : [];
                 setListCategory(data);
             } else {
                 notification.error({
@@ -92,6 +92,14 @@ export const CreateBook = (Props: IProps) => {
         return isJpgOrPng && isLt2M;
     };
 
+    const handlePreview = async (file: UploadFile) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as FileType);
+        }
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+    };
+
     const handleChange = (info: UploadChangeParam, type: "thumbnail" | "slider") => {
         if (info.file.status == 'uploading') {
             type === "slider" ? setLoadingSlider(true) : setLoadingThumbnail(true);
@@ -101,7 +109,8 @@ export const CreateBook = (Props: IProps) => {
             type === "slider" ? setLoadingSlider(false) : setLoadingThumbnail(false);
         }
     }
-    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess }) => {
+
+    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
         setTimeout(() => {
             if (onSuccess)
                 onSuccess("ok");
@@ -113,62 +122,8 @@ export const CreateBook = (Props: IProps) => {
         }
         return e?.fileList;
     }
-    // useEffect(() => {
-    //     if (dataCreateBook) {
-    //         //set fileListThumbnail
-    //         const arrThumbnail = [{
-    //             uid: uuidv4(),
-    //             name: dataCreateBook.thumbnail,
-    //             status: "done",
-    //             url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${dataCreateBook.thumbnail}`,
-    //         }]
-    //         const arrSlider = dataCreateBook?.slider?.map(item => {
-    //             return {
-    //                 uid: uuidv4(),
-    //                 name: item,
-    //                 status: "done",
-    //                 url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
-    //             }
-    //         })
-    //         form.setFieldsValue({
-    //             _id: dataCreateBook._id,
-    //             mainText: dataCreateBook.mainText,
-    //             author: dataCreateBook.author,
-    //             price: dataCreateBook.price,
-    //             category: dataCreateBook.category,
-    //             quantity: dataCreateBook.quantity,
-    //             thumbnail: dataCreateBook.thumbnail,
-    //             Slider: dataCreateBook.slider,
-    //             description: dataCreateBook.description,
-    //         })
-    //         setFileListThumbnail(arrThumbnail as UploadFile[]);
-    //         setFileListSlider(arrSlider as UploadFile[]);
-    //     }
 
-    // }, [dataCreateBook])
-    // const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    //     const { _id, mainText, author, price, quantity, category, description } = values;
-    //     const thumbnail = fileListThumbnail?.[0]?.name ?? "";
-    //     const slider = fileListSlider?.map((file) => file.name) ?? [];
-    //     //call API
-    //     setIsSubmit(true);
-    //     const res = await CreateBookAPI(_id, mainText, author, price, quantity, category, thumbnail, slider, description);
-    //     if (res && res.data) {
-    //         message.success("Tạo mới book thành công");
-    //         form.resetFields();
-    //         setFileListThumbnail([]);
-    //         setFileListSlider([]);
-    //         setOpenCreateBook(false);
-    //         setDataCreateBook(null);
-    //         refreshTable();
-    //     } else {
-    //         notification.error({
-    //             message: "Lỗi tạo mới book",
-    //             description: JSON.stringify(res.message),
-    //         });
-    //     }
-    //     setIsSubmit(false);
-    // }
+
     return (
         <>
             <Modal
@@ -283,7 +238,6 @@ export const CreateBook = (Props: IProps) => {
                         <Form.Item<FieldType>
                             label="Mô tả"
                             name="description"
-
                         >
                             <Input />
                         </Form.Item>
@@ -308,7 +262,7 @@ export const CreateBook = (Props: IProps) => {
                                     customRequest={handleUploadFile}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'thumbnail')}
-                                // onPreview={handlePreview}
+                                    onPreview={handlePreview}
                                 >
                                     <div>
                                         {loadingThumbnail ? <LoadingOutlined /> : <PlusOutlined />}
@@ -337,7 +291,7 @@ export const CreateBook = (Props: IProps) => {
                                     customRequest={handleUploadFile}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'slider')}
-                                // onPreview={handlePreview}
+                                    onPreview={handlePreview}
                                 >
                                     <div>
                                         {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
