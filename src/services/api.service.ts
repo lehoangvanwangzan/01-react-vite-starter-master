@@ -140,7 +140,6 @@ export const deleteBookAPI = (_id: string) => {
 //     return axios.post(URL_BACKEND, data)
 // }
 export const CreateBookAPI = (
-    _id: string,
     mainText: string,
     author: string,
     price: number,
@@ -148,8 +147,9 @@ export const CreateBookAPI = (
     category: string,
     thumbnail: string,
     slider: string[],
-    description: string) => {
-    const URL_BACKEND = `/api/v1/book/${_id}`;
+
+) => {
+    const URL_BACKEND = `/api/v1/book`;
     const data = {
         mainText: mainText,
         author: author,
@@ -158,7 +158,8 @@ export const CreateBookAPI = (
         category: category,
         thumbnail: thumbnail,
         slider: slider,
-        description: description,
+
+
     }
     return axios.post<IBackendRes<IBookTable>>(URL_BACKEND, data)
 }
@@ -184,7 +185,7 @@ export const UpdateBookAPI = (
     category: string,
     thumbnail: string,
     slider: string[],
-    description: string) => {
+) => {
     const URL_BACKEND = `/api/v1/book/${_id}`;
     const data = {
         mainText: mainText,
@@ -194,7 +195,7 @@ export const UpdateBookAPI = (
         category: category,
         thumbnail: thumbnail,
         slider: slider,
-        description: description,
+
     }
     return axios.put<IBackendRes<IBookTable>>(URL_BACKEND, data)
 }
@@ -210,6 +211,21 @@ export const bulkCreateUserAPI = (data: {
 export const GetCategoryAPI = () => {
     const URL_BACKEND = `/api/v1/database/category`;
     return axios.get<IBackendRes<string>>(URL_BACKEND)
+}
+export const UploadFileAPI = (fileImg: any, folder: string) => {
+    const bodyFormData = new FormData();
+    bodyFormData.append("fileImg", fileImg)
+    return axios<IBackendRes<{
+        fileUploaded: string
+    }>>({
+        method: 'post',
+        url: `/api/v1/file/upload`,
+        data: bodyFormData,
+        headers: {
+            "upload-type": folder,
+            "Content-Type": "multipart/form-data",
+        },
+    });
 }
 
 

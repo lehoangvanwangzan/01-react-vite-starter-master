@@ -57,6 +57,7 @@ export const DetailBook = (Props: IProps) => {
         });
 
     const handlePreview = async (file: UploadFile) => {
+        // console.log("check detail book", file)
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
@@ -104,7 +105,7 @@ export const DetailBook = (Props: IProps) => {
                 </Descriptions>
                 <Divider orientation="left"> Ảnh Book</Divider>
                 <Upload
-                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                    action="/upload.do"
                     listType="picture-card"
                     fileList={fileList}
                     onPreview={handlePreview}

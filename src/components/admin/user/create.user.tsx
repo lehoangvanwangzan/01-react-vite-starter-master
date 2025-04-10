@@ -23,6 +23,7 @@ export const CreateUser = (Props: IProps) => {
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         const { fullName, email, password, phone } = values;
         //call API
+        console.log("values create", values);
         setIsSubmit(true);
         const res = await createUserAPI(fullName, email, password, phone);
         if (res && res.data) {

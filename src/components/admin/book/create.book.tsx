@@ -1,25 +1,23 @@
-import { CreateBookAPI, GetCategoryAPI } from "@/services/api.service";
-import { App, Divider, Input, Modal, Form, InputNumber, UploadProps, GetProp, UploadFile, Row, Col, message, Select } from "antd";
+import { CreateBookAPI, GetCategoryAPI, UploadFileAPI } from "@/services/api.service";
+import { App, Divider, Input, Modal, Form, InputNumber, UploadProps, GetProp, UploadFile, Row, Col, Select, Image } from "antd";
 import { FormProps, Upload } from "antd/lib";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { UploadChangeParam } from "antd/es/upload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type UserUploadType = "thumbnail" | "slider";
 interface IProps {
     openCreateBook: boolean;
     setOpenCreateBook: (v: boolean) => void;
     refreshTable: () => void;
-    setDataCreateBook: (v: IBookTable | null) => void;
-    dataCreateBook: IBookTable | null;
+    // setDataCreateBook: (v: IBookTable | null) => void;
+    // dataCreateBook: IBookTable | null;
 }
 type FieldType = {
-    _id: string,
     author: string,
     title: string,
-    description: string,
     price: number,
     quantity: number,
     category: string,
@@ -30,7 +28,7 @@ type FieldType = {
 
 }
 export const CreateBook = (Props: IProps) => {
-    const { openCreateBook, setOpenCreateBook, refreshTable, dataCreateBook, setDataCreateBook } = Props;
+    const { openCreateBook, setOpenCreateBook, refreshTable } = Props;
     const [form] = Form.useForm();
     const { message, notification } = App.useApp();
     const [idSubmit, setIsSubmit] = useState<boolean>(false);
@@ -46,32 +44,48 @@ export const CreateBook = (Props: IProps) => {
 
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+
+        // console.log("values", values, fileListThumbnail, fileListSlider);
+        // console.log("fileListThumbnail", fileListThumbnail);
+        // console.log("fileListSlider", fileListSlider);
+        const { mainText, author, price, quantity, category } = values;
+        const thumbnail = fileListThumbnail?.[0]?.name ?? "";
+        const slider = fileListSlider?.map((item) => item.name) ?? [];
+        console.log("check onFinish", thumbnail, slider);
+        setIsSubmit(true);
+        const res = await CreateBookAPI(mainText, author, price, quantity, category, thumbnail, slider);
+        if (res && res.data) {
+            message.success("Tạo mới sách thành công");
+            form.resetFields();
+            setFileListThumbnail([]);
+            setFileListSlider([]);
+            setOpenCreateBook(false);
+            refreshTable();
+        } else {
+            notification.error({
+                message: "Create Book Fail",
+                description: res.message,
+            });
+        }
+        setIsSubmit(false);
+    }
 
     useEffect(() => {
         const fetchCategory = async () => {
             const res = await GetCategoryAPI();
             if (res && res.data) {
-                const data = Array.isArray(res.data) ? res.data.map((item) => {
-                    return {
-                        label: item,
-                        value: item,
-                    }
-                }) : [];
+                const parsedData = Array.isArray(res.data) ? res.data : JSON.parse(res.data);
+                const data = parsedData.map((item: any) => ({
+                    label: item,
+                    value: item,
+                }));
                 setListCategory(data);
-            } else {
-                notification.error({
-                    message: "Get category Fail",
-                    description: JSON.stringify(res.message),
-                });
             }
-        }
+        };
         fetchCategory();
-    }, [])
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        setIsSubmit(true);
-        console.log(values);
-        setIsSubmit(false);
-    }
+    }, []);
+
     const getBase64 = (file: FileType): Promise<string> =>
         new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -89,10 +103,19 @@ export const CreateBook = (Props: IProps) => {
             message.error('File upload nhỏ hơn 2MB !');
         }
 
-        return isJpgOrPng && isLt2M;
+        return isJpgOrPng && isLt2M || Upload.LIST_IGNORE;
     };
-
+    const handleRemove = async (file: UploadFile, type: UserUploadType) => {
+        if (type === "thumbnail") {
+            setFileListThumbnail([]);
+        }
+        if (type === "slider") {
+            const newSlider = fileListSlider.filter((item) => item.uid !== file.uid);
+            setFileListSlider(newSlider);
+        }
+    }
     const handlePreview = async (file: UploadFile) => {
+        console.log("check file preview", file);
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
@@ -100,7 +123,7 @@ export const CreateBook = (Props: IProps) => {
         setPreviewOpen(true);
     };
 
-    const handleChange = (info: UploadChangeParam, type: "thumbnail" | "slider") => {
+    const handleChange = (info: UploadChangeParam, type: UserUploadType) => {
         if (info.file.status == 'uploading') {
             type === "slider" ? setLoadingSlider(true) : setLoadingThumbnail(true);
             return
@@ -110,200 +133,216 @@ export const CreateBook = (Props: IProps) => {
         }
     }
 
-    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
-        setTimeout(() => {
-            if (onSuccess)
-                onSuccess("ok");
-        }, 1000);
+    const handleUploadFile = async (options: RcCustomRequestOptions, type: UserUploadType) => {
+        const { onSuccess } = options;
+        const file = options.file as UploadFile;
+        const res = await UploadFileAPI(file, "book")
+        if (res && res.data) {
+            const uploadedFile: any = {
+                uid: file.uid,
+                name: res.data.fileUploaded,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${res.data.fileUploaded}`,
+            }
+            if (type === "thumbnail") {
+                setFileListThumbnail([{ ...uploadedFile }]);
+            } else if (type === "slider") {
+                setFileListSlider((prevState) => [...prevState, uploadedFile, { ...uploadedFile }]);
+            }
+            if (onSuccess) {
+                onSuccess('ok');
+            }
+        } else {
+            notification.error({
+                message: "Upload file Fail",
+                description: JSON.stringify(res.message),
+            });
+        }
     }
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
             return e;
         }
         return e?.fileList;
+
     }
 
 
     return (
-        <>
-            <Modal
-                title="Tạo mới Book"
-                open={openCreateBook}
-                onOk={() => { form.submit() }}
-                onCancel={() => {
-                    form.resetFields();
-                    setFileListThumbnail([]);
-                    setFileListSlider([]);
-                    setDataCreateBook(null);
-                    setOpenCreateBook(false)
-                }}
-                destroyOnClose={true}
-                okButtonProps={{ loading: idSubmit }}
-                okText="Tạo mới"
-                cancelText="Hủy"
-                confirmLoading={idSubmit}
-                width={"50vw"}
-                maskClosable={false}
+        <Modal
+            title="Tạo mới Book"
+            open={openCreateBook}
+            onOk={() => { form.submit() }}
+            onCancel={() => {
+                // console.log("close modal create book");
+                form.resetFields();
+                setFileListThumbnail([]);
+                setFileListSlider([]);
+                setOpenCreateBook(false);
+
+            }}
+            destroyOnClose={true}
+            okButtonProps={{ loading: idSubmit }}
+            okText="Tạo mới"
+            cancelText="Hủy"
+            confirmLoading={idSubmit}
+            width={"50vw"}
+            maskClosable={false}
+        >
+            <Divider />
+            <Form
+                form={form}
+                layout="vertical"
+                name="basic"
+                onFinish={onFinish}
+                autoComplete="off"
             >
-                <Divider />
-                <Form
-                    form={form}
-                    layout="vertical"
-                    name="basic"
-                    onFinish={onFinish}
-                    autoComplete="off"
-                >
-                    <Row gutter={15}>
+                <Row gutter={15}>
+                    <Col span={12}>
                         <Form.Item<FieldType>
                             labelCol={{ span: 24 }}
-                            hidden={true}
-                            label="_id"
-                            name="_id"
+                            label="Tên sách"
+                            name="mainText"
                             rules={[{
                                 required: true,
-                                message: 'ID không được để trống!'
+                                message: 'Tên sách không được để trống!'
                             }]}
-                        >
-                            <Input disabled />
-                        </Form.Item>
-                        <Col span={12}>
-                            <Form.Item<FieldType>
-                                labelCol={{ span: 24 }}
-                                label="Tên sách"
-                                name="mainText"
-                                rules={[{
-                                    required: true,
-                                    message: 'Tên sách không được để trống!'
-                                }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item<FieldType>
-                                label="Tác giả"
-                                name="author"
-                                rules={[
-                                    { required: true, message: 'Tác giả không được bỏ trống!' },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={15}>
-                        <Col span={6}>
-                            <Form.Item<FieldType>
-                                label="Thể loại"
-                                name="category"
-                                rules={[
-                                    { required: true, message: 'Thể loại không được bỏ trống!' },
-                                ]}
-                            >
-                                <Select
-                                    showSearch
-                                    allowClear
-                                    options={listCategory}
-                                />
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item<FieldType>
-                                label="Giá tiền"
-                                name="price"
-                                rules={[
-                                    { required: true, message: 'Giá không được bỏ trống!' },
-                                ]}
-                            >
-                                <InputNumber
-                                    style={{ width: "100%" }}
-                                    formatter={(values) => `${values}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                    addonAfter=" đ"
-                                />
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item<FieldType>
-                                label="Số lượng"
-                                name="quantity"
-                                rules={[
-                                    { required: true, message: 'Số lượng không được bỏ trống!' },
-                                ]}
-                            >
-                                <Input type="number" min={1} style={{ width: '100%' }} />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Col span={24}>
-                        <Form.Item<FieldType>
-                            label="Mô tả"
-                            name="description"
                         >
                             <Input />
                         </Form.Item>
                     </Col>
-                    <Row gutter={15}>
-                        <Col span={12}>
-                            <Form.Item<FieldType>
-                                labelCol={{ span: 12 }}
-                                label="Ảnh Thumbnail"
-                                name="thumbnail"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập upload thumbnail!' },
-                                ]}
-                                valuePropName="fileList"
-                                getValueFromEvent={normFile}
+                    <Col span={12}>
+                        <Form.Item<FieldType>
+                            label="Tác giả"
+                            name="author"
+                            rules={[
+                                { required: true, message: 'Tác giả không được bỏ trống!' },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={15}>
+                    <Col span={6}>
+                        <Form.Item<FieldType>
+                            label="Thể loại"
+                            name="category"
+                            rules={[
+                                { required: true, message: 'Thể loại không được bỏ trống!' },
+                            ]}
+                        >
+                            <Select
+                                showSearch
+                                allowClear
+                                options={listCategory}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item<FieldType>
+                            label="Giá tiền"
+                            name="price"
+                            rules={[
+                                { required: true, message: 'Giá không được bỏ trống!' },
+                            ]}
+                        >
+                            <InputNumber
+                                style={{ width: "100%" }}
+                                formatter={(values) => `${values}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                addonAfter=" đ"
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item<FieldType>
+                            label="Số lượng"
+                            name="quantity"
+                            rules={[
+                                { required: true, message: 'Số lượng không được bỏ trống!' },
+                            ]}
+                        >
+                            <InputNumber type="number" min={1} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={15}>
+                    <Col span={12}>
+                        <Form.Item<FieldType>
+                            labelCol={{ span: 12 }}
+                            label="Ảnh Thumbnail"
+                            name="thumbnail"
+                            rules={[
+                                { required: true, message: 'Vui lòng nhập upload thumbnail!' },
+                            ]}
+                            valuePropName="fileList"
+                            getValueFromEvent={normFile}
+                        >
+                            <Upload
+                                listType="picture-card"
+                                className="avatar-uploader"
+                                maxCount={1}
+                                multiple={false}
+                                customRequest={(options) => handleUploadFile(options, "thumbnail")}
+                                beforeUpload={beforeUpload}
+                                onChange={(info) => handleChange(info, 'thumbnail')}
+                                onPreview={handlePreview}
+                                onRemove={(file) => handleRemove(file, "thumbnail")}
+                                fileList={fileListThumbnail}
                             >
-                                <Upload
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    maxCount={1}
-                                    multiple={false}
-                                    customRequest={handleUploadFile}
-                                    beforeUpload={beforeUpload}
-                                    onChange={(info) => handleChange(info, 'thumbnail')}
-                                    onPreview={handlePreview}
-                                >
-                                    <div>
-                                        {loadingThumbnail ? <LoadingOutlined /> : <PlusOutlined />}
-                                        <div style={{ marginTop: 8 }}> Upload</div>
-                                    </div>
+                                <div>
+                                    {loadingThumbnail ? <LoadingOutlined /> : <PlusOutlined />}
+                                    <div style={{ marginTop: 8 }}> Upload</div>
+                                </div>
 
-                                </Upload>
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item<FieldType>
-                                labelCol={{ span: 12 }}
-                                label="Ảnh Slider"
-                                name="slider"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập upload slider!' },
-                                ]}
-                                valuePropName="fileList"
-                                getValueFromEvent={normFile}
+                            </Upload>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item<FieldType>
+                            labelCol={{ span: 12 }}
+                            label="Ảnh Slider"
+                            name="slider"
+                            rules={[
+                                { required: true, message: 'Vui lòng nhập upload slider!' },
+                            ]}
+                            valuePropName="fileList"
+                            getValueFromEvent={normFile}
+                        >
+                            <Upload
+                                listType="picture-card"
+                                className="avatar-uploader"
+                                maxCount={1}
+                                multiple={false}
+                                customRequest={(options) => handleUploadFile(options, "slider")}
+                                beforeUpload={beforeUpload}
+                                onChange={(info) => handleChange(info, 'slider')}
+                                onPreview={handlePreview}
+                                onRemove={(file) => handleRemove(file, "slider")}
+                                fileList={fileListSlider}
                             >
-                                <Upload
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    maxCount={1}
-                                    multiple={false}
-                                    customRequest={handleUploadFile}
-                                    beforeUpload={beforeUpload}
-                                    onChange={(info) => handleChange(info, 'slider')}
-                                    onPreview={handlePreview}
-                                >
-                                    <div>
-                                        {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
-                                        <div style={{ marginTop: 8 }}> Upload</div>
-                                    </div>
+                                <div>
+                                    {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
+                                    <div style={{ marginTop: 8 }}> Upload</div>
+                                </div>
 
-                                </Upload>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
-            </Modal >
-        </>
+                            </Upload>
+                            {previewImage && (
+                                <Image
+                                    wrapperStyle={{ display: 'none' }}
+                                    preview={{
+                                        visible: previewOpen,
+                                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                                        afterOpenChange: (visible) => !visible && setPreviewImage('')
+                                    }}
+                                    src={previewImage}
+                                />
+                            )}
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
+        </Modal >
+
     )
 }

@@ -33,7 +33,7 @@ const TableBook = () => {
     const [dataViewDetail, setDataViewDetail] = useState<IBookTable | null>(null);
 
     const [openCreateBook, setOpenCreateBook] = useState<boolean>(false);
-    const [dataCreateBook, setDataCreateBook] = useState<IBookTable | null>(null);
+    // const [dataCreateBook, setDataCreateBook] = useState<IBookTable | null>(null);
 
     const [openUpdateBook, setOpenUpdateBook] = useState<boolean>(false);
     const [dataUpdateBook, setDataUpdateBook] = useState<IBookTable | null>(null);
@@ -301,8 +301,8 @@ const TableBook = () => {
             <CreateBook
                 openCreateBook={openCreateBook}
                 setOpenCreateBook={setOpenCreateBook}
-                dataCreateBook={dataCreateBook}
-                setDataCreateBook={setDataCreateBook}
+                // dataCreateBook={dataCreateBook}
+                // setDataCreateBook={setDataCreateBook}
                 refreshTable={refreshTable}
             />
             <ImportBook
