@@ -1,19 +1,18 @@
 import { CreateBookAPI, GetCategoryAPI, UploadFileAPI } from "@/services/api.service";
-import { App, Divider, Input, Modal, Form, InputNumber, UploadProps, GetProp, UploadFile, Row, Col, Select, Image } from "antd";
-import { FormProps, Upload } from "antd/lib";
+import { App, Divider, Input, Modal, Form, InputNumber, Row, Col, Select, Upload, Image } from "antd";
+import type { FormProps } from "antd";
 import { useEffect, useState } from "react";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { UploadChangeParam } from "antd/es/upload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
+import type { GetProp, UploadFile, UploadProps } from "antd";
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type UserUploadType = "thumbnail" | "slider";
 interface IProps {
     openCreateBook: boolean;
     setOpenCreateBook: (v: boolean) => void;
     refreshTable: () => void;
-    // setDataCreateBook: (v: IBookTable | null) => void;
-    // dataCreateBook: IBookTable | null;
 }
 type FieldType = {
     author: string,
@@ -45,10 +44,6 @@ export const CreateBook = (Props: IProps) => {
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-
-        // console.log("values", values, fileListThumbnail, fileListSlider);
-        // console.log("fileListThumbnail", fileListThumbnail);
-        // console.log("fileListSlider", fileListSlider);
         const { mainText, author, price, quantity, category } = values;
         const thumbnail = fileListThumbnail?.[0]?.name ?? "";
         const slider = fileListSlider?.map((item) => item.name) ?? [];
@@ -131,7 +126,7 @@ export const CreateBook = (Props: IProps) => {
         if (info.file.status === 'done') {
             type === "slider" ? setLoadingSlider(false) : setLoadingThumbnail(false);
         }
-    }
+    };
 
     const handleUploadFile = async (options: RcCustomRequestOptions, type: UserUploadType) => {
         const { onSuccess } = options;
@@ -140,14 +135,14 @@ export const CreateBook = (Props: IProps) => {
         if (res && res.data) {
             const uploadedFile: any = {
                 uid: file.uid,
-                name: res.data.fileUploaded,
+                name: res.data.fileUploaded, // fileUploaded file api
                 status: 'done',
                 url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${res.data.fileUploaded}`,
             }
             if (type === "thumbnail") {
                 setFileListThumbnail([{ ...uploadedFile }]);
-            } else if (type === "slider") {
-                setFileListSlider((prevState) => [...prevState, uploadedFile, { ...uploadedFile }]);
+            } else {
+                setFileListSlider((prevState) => [...prevState, { ...uploadedFile }]);
             }
             if (onSuccess) {
                 onSuccess('ok');
@@ -269,7 +264,7 @@ export const CreateBook = (Props: IProps) => {
                 <Row gutter={15}>
                     <Col span={12}>
                         <Form.Item<FieldType>
-                            labelCol={{ span: 12 }}
+                            labelCol={{ span: 24 }}
                             label="Ảnh Thumbnail"
                             name="thumbnail"
                             rules={[
@@ -279,6 +274,7 @@ export const CreateBook = (Props: IProps) => {
                             getValueFromEvent={normFile}
                         >
                             <Upload
+
                                 listType="picture-card"
                                 className="avatar-uploader"
                                 maxCount={1}
@@ -300,7 +296,7 @@ export const CreateBook = (Props: IProps) => {
                     </Col>
                     <Col span={12}>
                         <Form.Item<FieldType>
-                            labelCol={{ span: 12 }}
+                            labelCol={{ span: 24 }}
                             label="Ảnh Slider"
                             name="slider"
                             rules={[
@@ -312,8 +308,9 @@ export const CreateBook = (Props: IProps) => {
                             <Upload
                                 listType="picture-card"
                                 className="avatar-uploader"
-                                maxCount={1}
+                                maxCount={3}
                                 multiple={false}
+
                                 customRequest={(options) => handleUploadFile(options, "slider")}
                                 beforeUpload={beforeUpload}
                                 onChange={(info) => handleChange(info, 'slider')}
@@ -327,20 +324,21 @@ export const CreateBook = (Props: IProps) => {
                                 </div>
 
                             </Upload>
-                            {previewImage && (
-                                <Image
-                                    wrapperStyle={{ display: 'none' }}
-                                    preview={{
-                                        visible: previewOpen,
-                                        onVisibleChange: (visible) => setPreviewOpen(visible),
-                                        afterOpenChange: (visible) => !visible && setPreviewImage('')
-                                    }}
-                                    src={previewImage}
-                                />
-                            )}
+
                         </Form.Item>
                     </Col>
                 </Row>
+                {previewImage && (
+                    <Image
+                        wrapperStyle={{ display: 'none' }}
+                        preview={{
+                            visible: previewOpen,
+                            onVisibleChange: (visible) => setPreviewOpen(visible),
+                            afterOpenChange: (visible) => !visible && setPreviewImage('')
+                        }}
+                        src={previewImage}
+                    />
+                )}
             </Form>
         </Modal >
 

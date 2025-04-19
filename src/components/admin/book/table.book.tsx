@@ -35,11 +35,11 @@ const TableBook = () => {
     const [openCreateBook, setOpenCreateBook] = useState<boolean>(false);
     // const [dataCreateBook, setDataCreateBook] = useState<IBookTable | null>(null);
 
-    const [openUpdateBook, setOpenUpdateBook] = useState<boolean>(false);
+    const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
     const [dataUpdateBook, setDataUpdateBook] = useState<IBookTable | null>(null);
 
     const [openImportBook, setOpenImportBook] = useState<boolean>(false);
-    const [currentDataTable] = useState<IBookTable[]>([]);
+    const [currentDataTable, setCurrentDataTable] = useState<IBookTable[]>([]);
     const [isDeleteBook, setIsDeleteBook] = useState<boolean>(false);
     const columns: ProColumns<IBookTable>[] = [
         {
@@ -138,7 +138,7 @@ const TableBook = () => {
                         twoToneColor='#f57800'
                         style={{ cursor: 'pointer', marginRight: '10px' }}
                         onClick={() => {
-                            setOpenUpdateBook(true);
+                            setOpenModalUpdate(true);
                             setDataUpdateBook(entity);
                         }}
                     />
@@ -228,7 +228,7 @@ const TableBook = () => {
                     if (res.data) {
                         console.log("check res data", res.data?.result ?? []);
                         setMeta(res.data?.meta);
-                        // setCurrentDataTable(res.data?.result ?? []);
+                        setCurrentDataTable(res.data?.result ?? []);
                     }
                     return {
                         // data: data.data,
@@ -254,18 +254,19 @@ const TableBook = () => {
                 headerTitle="Table book"
                 toolBarRender={() => [
 
-                    <Button
-                        key="button"
-                        icon={<ExportOutlined />}
-                        type='primary'
+                    <CSVLink
+                        data={currentDataTable}
+                        filename='export-book.csv'
                     >
-                        <CSVLink
-                            data={currentDataTable}
-                            filename='export-book.csv'
+                        <Button
+                            key="button"
+                            icon={<ExportOutlined />}
+                            type='primary'
                         >
                             Export
-                        </CSVLink>
-                    </Button>
+                        </Button>
+
+                    </CSVLink>
                     ,
                     <Button
                         key="button"
@@ -311,8 +312,8 @@ const TableBook = () => {
                 refreshTable={refreshTable}
             />
             <UpdateBook
-                openUpdateBook={openUpdateBook}
-                setOpenUpdateBook={setOpenUpdateBook}
+                openModalUpdate={openModalUpdate}
+                setOpenModalUpdate={setOpenModalUpdate}
                 setDataUpdateBook={setDataUpdateBook}
                 dataUpdateBook={dataUpdateBook}
                 refreshTable={refreshTable}

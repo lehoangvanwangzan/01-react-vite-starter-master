@@ -5,7 +5,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import BookPage from 'pages/client/book';
+
 import AboutPage from 'pages/client/about';
 import LoginPage from 'pages/client/auth/login';
 import RegisterPage from 'pages/client/auth/register';
@@ -20,7 +20,7 @@ import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import { ProtectedRoute } from 'components/auth';
 import enUS from 'antd/locale/en_US';
-
+import { BookPage } from 'pages/client/book';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: "/book",
+        path: "/book/:id",
         element: <BookPage />,
       },
       {

@@ -17,7 +17,6 @@ export const DetailBook = (Props: IProps) => {
 
     const [previewImage, setPreviewImage] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     useEffect(() => {
         if (dataViewDetail) {
@@ -40,7 +39,7 @@ export const DetailBook = (Props: IProps) => {
                     })
                 })
             }
-            setFileList([imgThubnail, ...imgSlider])
+            setFileList([imgThubnail, ...imgSlider]) //...copy lại nội dung
         }
     }, [dataViewDetail])
 
@@ -90,9 +89,6 @@ export const DetailBook = (Props: IProps) => {
                         new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dataViewDetail?.price ?? 0)}
                     </Descriptions.Item>
                     <Descriptions.Item label="Thể loại" span={2}>{dataViewDetail?.category}</Descriptions.Item>
-                    {/* <Descriptions.Item label="Trạng thái" >
-                        <Badge status={dataViewDetail?.isActive ? "success" : "error"} text={dataViewDetail?.isActive ? "Đang hoạt động" : "Ngừng hoạt động"} />
-                    </Descriptions.Item> */}
                     <Descriptions.Item label="Ngày tạo" >
                         {dayjs(dataViewDetail?.createdAt).format(FORMATE_DATE_VN)}
                     </Descriptions.Item>

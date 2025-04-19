@@ -55,7 +55,7 @@ const AppHeader = (props: any) => {
         })
     }
 
-    const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
+    const urlAvatar = `${import.meta.env.VITE_URL_BACKEND}/images/avatar/${user?.avatar}`;
 
     const contentPopover = () => {
         return (
