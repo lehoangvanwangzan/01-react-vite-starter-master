@@ -9,8 +9,9 @@ import {
 import AboutPage from 'pages/client/about';
 import LoginPage from 'pages/client/auth/login';
 import RegisterPage from 'pages/client/auth/register';
-import 'styles/global.scss'
+import HistoryPage from 'pages/client/history';
 import HomePage from 'pages/client/home';
+import 'styles/global.scss'
 import { App, ConfigProvider } from 'antd';
 import { AppProvider } from 'components/context/app.context';
 import DashBoardPage from 'pages/admin/dashboard';
@@ -21,6 +22,8 @@ import LayoutAdmin from 'components/layout/layout.admin';
 import { ProtectedRoute } from 'components/auth';
 import enUS from 'antd/locale/en_US';
 import { BookPage } from 'pages/client/book';
+import { OrderPage } from 'pages/client/order';
+
 
 const router = createBrowserRouter([
   {
@@ -40,10 +43,18 @@ const router = createBrowserRouter([
         element: <AboutPage />,
       },
       {
-        path: "/checkout",
+        path: "/order",
         element: (
           <ProtectedRoute>
-            <div>checkout page</div>
+            <OrderPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/history",
+        element: (
+          <ProtectedRoute>
+            <HistoryPage />
           </ProtectedRoute>
         ),
       }

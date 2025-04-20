@@ -276,7 +276,7 @@ const HomePage = () => {
                                                     className="column" key={`book-${index}`}>
                                                     <div className='wrapper'>
                                                         <div className='thumbnail'>
-                                                            <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${item.thumbnail}`} alt="thumbnail book" />
+                                                            <img src={`${import.meta.env.VITE_URL_BACKEND}/images/book/${item.thumbnail}`} alt="thumbnail book" />
                                                         </div>
                                                         <div className='text' title={item.mainText}>{item.mainText}</div>
                                                         <div className='price'>

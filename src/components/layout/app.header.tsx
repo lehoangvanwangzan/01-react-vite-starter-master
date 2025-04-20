@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { FaReact } from 'react-icons/fa'
 import { FiShoppingCart } from 'react-icons/fi';
 import { VscSearchFuzzy } from 'react-icons/vsc';
-import { Divider, Badge, Drawer, Avatar, Popover } from 'antd';
+import { Divider, Badge, Drawer, Avatar, Popover, Empty, Button } from 'antd';
 import { Dropdown, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import './app.header.scss';
 import { Link } from 'react-router-dom';
 import { useCurrentApp } from 'components/context/app.context';
 import { logoutAPI } from '@/services/api.service';
+import { PhoneOutlined } from '@ant-design/icons';
 
 const AppHeader = (props: any) => {
     const [openDrawer, setOpenDrawer] = useState(false);
 
-    const { isAuthenticated, user, setUser, setIsAuthenticated } = useCurrentApp();
+    const { isAuthenticated, user, setUser, setIsAuthenticated, carts } = useCurrentApp();
 
     const navigate = useNavigate();
 
@@ -60,11 +61,11 @@ const AppHeader = (props: any) => {
     const contentPopover = () => {
         return (
             <div className='pop-cart-body'>
-                {/* <div className='pop-cart-content'>
+                <div className='pop-cart-content'>
                     {carts?.map((book, index) => {
                         return (
                             <div className='book' key={`book-${index}`}>
-                                <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${book?.detail?.thumbnail}`} />
+                                <img src={`${import.meta.env.VITE_URL_BACKEND}/images/book/${book?.detail?.thumbnail}`} />
                                 <div>{book?.detail?.mainText}</div>
                                 <div className='price'>
                                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book?.detail?.price ?? 0)}
@@ -81,7 +82,7 @@ const AppHeader = (props: any) => {
                     <Empty
                         description="Không có sản phẩm trong giỏ hàng"
                     />
-                } */}
+                }
             </div>
         )
     }
@@ -95,8 +96,9 @@ const AppHeader = (props: any) => {
                         }}>☰</div>
                         <div className='page-header__logo'>
                             <span className='logo'>
-                                <span onClick={() => navigate('/')}> <FaReact className='rotate icon-react' />HOÀNG VĂN TEK</span>
-
+                                <span onClick={() => navigate('/')}>
+                                    <FaReact className='rotate icon-react' />
+                                    HOÀNG VĂN TEK</span>
                                 <VscSearchFuzzy className='icon-search' />
                             </span>
                             <input
@@ -111,6 +113,24 @@ const AppHeader = (props: any) => {
                     <nav className="page-header__bottom">
                         <ul id="navigation" className="navigation">
                             <li className="navigation__item">
+                                <Button className='btn-call'
+                                    onClick={() => { alert("Gọi mua hàng: 0917946024") }}
+                                    type="primary"
+                                    icon={<PhoneOutlined />}
+                                    size={'large'}
+                                    shape="round"
+                                    style={{
+                                        backgroundColor: '#ff4d4f',
+                                        borderColor: '#ff4d4f',
+                                        color: 'white'
+                                    }}
+
+                                >
+
+                                    <span className='phone-number'>Gọi mua hàng <br /> 0917946024</span>
+                                </Button>
+                            </li>
+                            <li className="navigation__item">
                                 <Popover
                                     className="popover-carts"
                                     placement="topRight"
@@ -119,9 +139,8 @@ const AppHeader = (props: any) => {
                                     content={contentPopover}
                                     arrow={true}>
                                     <Badge
-                                        // count={carts?.length ?? 0}
-                                        count={10}
-                                        size={"small"}
+                                        count={carts?.length ?? 0}
+                                        size={"default"}
                                         showZero
                                     >
                                         <FiShoppingCart className='icon-cart' />
@@ -144,7 +163,7 @@ const AppHeader = (props: any) => {
                         </ul>
                     </nav>
                 </header>
-            </div>
+            </div >
             <Drawer
                 title="Menu chức năng"
                 placement="left"

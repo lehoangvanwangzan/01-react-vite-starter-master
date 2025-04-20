@@ -149,3 +149,17 @@ export const GetBookByIdAPI = (_id: string) => {
         }
     });
 }
+
+export const CreateOrderAPI = (
+    name: string, address: string,
+    phone: string, totalPrice: number,
+    type: string, detail: any
+) => {
+    const urlBackend = "/api/v1/order";
+    return axios.post<IBackendRes<IRegister>>(urlBackend,
+        { name, address, phone, totalPrice, type, detail });
+}
+export const GetHistoryAPI = () => {
+    const urlBackend = `/api/v1/history`;
+    return axios.get<IBackendRes<IHistory[]>>(urlBackend)
+}
