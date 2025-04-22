@@ -27,7 +27,7 @@ export const registerUserAPI = (fullName: string, email: string, password: strin
 }
 export const loginAPI = (username: string, password: string) => {
     const URL_BACKEND = "/api/v1/auth/login";
-    return axios.post<IBackendRes<ILogin>>(URL_BACKEND, { username, password, delay: 2000 })
+    return axios.post<IBackendRes<ILogin>>(URL_BACKEND, { username, password })
 }
 
 export const logoutAPI = () => {
@@ -38,7 +38,7 @@ export const logoutAPI = () => {
 
 export const fetchAccountAPI = () => {
     const URL_BACKEND = "/api/v1/auth/account";
-    return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND, { headers: { delay: 2000 } });
+    return axios.get<IBackendRes<IFetchAccount>>(URL_BACKEND);
 }
 
 export const getUsersAPI = (query: string) => {
@@ -133,21 +133,11 @@ export const UploadFileAPI = (fileImg: any, folder: string) => {
 }
 export const GetBooksAPI = (query: string) => {
     const URL_BACKEND = `/api/v1/book?${query}`;
-    return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(URL_BACKEND, {
-        headers: {
-            delay: 1000
-
-        }
-    });
+    return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(URL_BACKEND);
 }
 export const GetBookByIdAPI = (_id: string) => {
     const URL_BACKEND = `/api/v1/book/${_id}`;
-    return axios.get<IBackendRes<IBookTable>>(URL_BACKEND, {
-        headers: {
-            delay: 1000
-
-        }
-    });
+    return axios.get<IBackendRes<IBookTable>>(URL_BACKEND);
 }
 
 export const CreateOrderAPI = (
